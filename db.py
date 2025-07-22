@@ -1,5 +1,6 @@
 from sqlmodel import create_engine, SQLModel, Session
 from config import DATABASE_URL
+from pydantic import HttpUrl
 
 engine = create_engine(DATABASE_URL, echo=True)
 
