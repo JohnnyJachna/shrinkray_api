@@ -12,6 +12,7 @@ fastapi = "*"
 uvicorn = "*"
 bcrypt = "*"
 pyjwt = "*"
+pydantic = {extras = ["email"], version = "*"}
 
 [dev-packages]
 
