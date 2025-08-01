@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from db import get_session
 
 from models.urls import Urls
-from models.users import User, UserSchema, UserAccountSchema
+from models.users import User, UserSchema, UserAccountSchema, UserRegistrationSchema
 from models.tokens import Token, BlacklistedToken, create_access_token
 
 import config
@@ -50,8 +50,17 @@ async def get_single_url(id: str, session: Session = Depends(get_session)):
 # CREATE data (CRUD)
 @app.post("/urls/add")
 async def add_url(
-    payload: Urls, session: Session = Depends(get_session)
+    payload: Urls, user: Token = Depends(get_current_user_token), 
+                   session: Session = Depends(get_session)
     ):
+    if Token is None:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid user credentials"
+        )
+    else:
+        pass     
+       
     new_url = Urls(
          title=payload.title,
          long_url=payload.long_url,
@@ -64,7 +73,7 @@ async def add_url(
     return {"message": f"Added new url with ID: {new_url.id}"}
 
 @app.post('/register', response_model=UserSchema)
-def register_user(payload: UserAccountSchema, session: Session = Depends(get_session)):
+def register_user(payload: UserRegistrationSchema, session: Session = Depends(get_session)):
     """Processes request to register user account."""
     payload.hashed_password = User.hash_password(payload.hashed_password)
     return create_user(user=payload, session=session)

@@ -44,8 +44,8 @@ async def get_current_user_token(token: str = Depends(oauth2_scheme), session: S
         if not email or is_token_blacklisted(token, session):
             raise credentials_exception
 
-
         token_data = TokenData(email=email)
+
     except jwt.ExpiredSignatureError:
         raise credentials_exception
     except jwt.DecodeError:
@@ -53,6 +53,8 @@ async def get_current_user_token(token: str = Depends(oauth2_scheme), session: S
 
     statement = select(User).where(User.email == email)
     user = session.exec(statement).one()
+    
     if user is None:
         raise credentials_exception
-    return user
+    
+    return token_data
